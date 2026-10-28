@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Leandro tvOS - Launcher & Dashboard Pro</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Apple San Francisco Alternative: Inter & Plus Jakarta Sans with SF Pro styling -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      user-select: none;
+      outline: none;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #050608;
+      color: #ffffff;
+      overflow-x: hidden;
+      overflow-y: auto;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Apple tvOS Frosted Glass & Blur Effects */
+    .apple-glass {
+      background: rgba(30, 32, 44, 0.55);
+      backdrop-filter: blur(40px) saturate(190%);
+      -webkit-backdrop-filter: blur(40px) saturate(190%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .apple-glass-card {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+      backdrop-filter: blur(35px) saturate(180%);
+      -webkit-backdrop-filter: blur(35px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.6);
+    }
+    .apple-pill-btn {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .apple-pill-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Apple tvOS Iconic Parallax & Specular Highlight Focus */
+    .tv-focusable {
+      transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.24s ease, border-color 0.24s ease, background 0.24s ease;
+      position: relative;
+    }
+    .tv-focusable:focus, .tv-focusable.tv-focused {
+      transform: scale(1.1);
+      z-index: 50;
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.95) !important;
+      box-shadow: 0 0 0 3px #ffffff, 0 25px 50px -10px rgba(0, 0, 0, 0.8), 0 0 35px rgba(255, 255, 255, 0.35) !important;
+    }
+
+    /* tvOS App Squircle Top Specular Line */
+    .apple-squircle {
+      border-radius: 26px;
+      overflow: hidden;
+      position: relative;
+    }
+    .apple-squircle::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 35%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 100%);
+      pointer-events-none;
+      border-radius: 26px 26px 0 0;
+    }
+
+    /* Custom Apple TV Scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+  </style>
+</head>
+<body class="bg-[#050608] text-white flex flex-col justify-between selection:bg-white selection:text-black">
+
+  <!-- Apple TV Ambient Liquid Wallpaper (Subtle organic color glow behind the dark glass) -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div class="absolute -top-40 left-1/4 w-[45rem] h-[30rem] bg-gradient-to-br from-indigo-700/25 via-purple-800/20 to-blue-900/10 rounded-full blur-[110px]"></div>
+    <div class="absolute top-1/2 -right-40 w-[40rem] h-[35rem] bg-gradient-to-tr from-cyan-600/15 via-blue-700/15 to-transparent rounded-full blur-[120px]"></div>
+    <div class="absolute -bottom-40 left-10 w-[35rem] h-[25rem] bg-gradient-to-tr from-sky-800/20 to-indigo-900/15 rounded-full blur-[100px]"></div>
+  </div>
+
+  <!-- MAIN APP CONTAINER -->
+  <div class="relative z-10 w-full max-w-[1920px] mx-auto px-6 lg:px-14 py-6 flex flex-col gap-6">
+
+    <!-- 1. APPLE TV TOP STATUS & NAVIGATION BAR -->
+    <header class="flex items-center justify-between gap-4 py-2 border-b border-white/10">
+      
+      <!-- Left: Apple TV Logo & User Profile -->
+      <div class="flex items-center gap-4">
+        <!-- Apple Logo & Brand -->
+        <div class="flex items-center gap-2.5">
+          <svg class="w-7 h-7 text-white fill-current" viewBox="0 0 170 170">
+            <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.07-7.77-7.92-12.23-14.54-6.49-9.59-11.64-20.73-15.46-33.43-3.82-12.7-5.73-24.89-5.73-36.57 0-14.5 3.49-26.65 10.46-36.46 6.98-9.8 15.74-14.86 26.29-15.17 4.35 0 9.24 1.14 14.68 3.43 5.43 2.29 9.38 3.51 11.83 3.65 2.12-.27 6.13-1.6 12.03-3.99 5.91-2.4 10.87-3.48 14.89-3.26 12.19.64 21.84 5.31 28.94 14.01-10.66 6.44-15.89 15.34-15.7 26.71.22 9.04 3.69 16.59 10.42 22.65 6.72 6.06 14.68 9.39 23.86 9.99-1.96 5.89-4.24 11.95-6.84 18.18-2.6 6.22-4.99 11.75-7.17 16.59zM119.22 31.84c0-7.1 2.58-13.78 7.74-20.03 5.16-6.26 11.71-10.51 19.65-12.75.98 7.32-1.28 14.24-6.78 20.76-5.5 6.52-12.37 10.46-20.61 12.02z"/>
+          </svg>
+          <span class="text-xl font-black tracking-tight text-white flex items-center gap-1.5">
+            tvOS <span class="text-xs px-2 py-0.5 rounded-full bg-white/10 text-white font-medium border border-white/20">Leandro Edition</span>
+          </span>
+        </div>
+
+        <div class="h-5 w-[1px] bg-white/20 hidden md:block"></div>
+
+        <!-- User Profile Pill -->
+        <div onclick="openAboutModal()" class="tv-focusable hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full apple-pill-btn cursor-pointer" tabindex="0">
+          <div class="w-5 h-5 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
+            LC
+          </div>
+          <span class="text-xs font-semibold text-white">Leandro Corrêa</span>
+        </div>
+      </div>
+
+      <!-- Center: Apple TV Navigation Tabs -->
+      <nav class="hidden lg:flex items-center gap-1 p-1 rounded-full apple-glass border border-white/10">
+        <button onclick="scrollToSection('heroShelf')" class="tv-focusable px-4 py-1.5 rounded-full text-xs font-bold text-white bg-white/20 transition-all" tabindex="0">Em Alta</button>
+        <button onclick="scrollToSection('appsRow')" class="tv-focusable px-4 py-1.5 rounded-full text-xs font-medium text-slate-300 hover:text-white transition-all" tabindex="0">Aplicativos</button>
+        <button onclick="scrollToSection('controlCenter')" class="tv-focusable px-4 py-1.5 rounded-full text-xs font-medium text-slate-300 hover:text-white transition-all" tabindex="0">Central de Controle</button>
+        <button onclick="openAboutModal()" class="tv-focusable px-4 py-1.5 rounded-full text-xs font-medium text-slate-300 hover:text-white transition-all" tabindex="0">Sobre</button>
+      </nav>
+
+      <!-- Right: Real-time Cupertino Weather & Apple Clock -->
+      <div class="flex items-center gap-4">
+        <!-- Weather Badge -->
+        <div onclick="openWeatherModal()" class="tv-focusable flex items-center gap-2 px-3 py-1.5 rounded-full apple-pill-btn cursor-pointer" tabindex="0" title="Ver clima completo">
+          <span class="text-base" id="headerWeatherIcon">☀️</span>
+          <span class="text-xs font-bold text-white" id="headerTemp">28°</span>
+          <span class="text-[11px] text-slate-300 hidden sm:inline" id="headerWeatherCondition">Ensolarado</span>
+        </div>
+
+        <!-- Clock & Badges -->
+        <div class="text-right flex items-center gap-3">
+          <div class="hidden sm:flex items-center gap-1.5">
+            <span class="text-[10px] px-2 py-0.5 rounded-md bg-white/10 text-slate-200 font-bold border border-white/15">4K HDR</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-md bg-white/10 text-slate-200 font-bold border border-white/15">Dolby Atmos</span>
+          </div>
+
+          <div class="border-l border-white/15 pl-3">
+            <div id="clockDisplay" class="text-xl md:text-2xl font-extrabold text-white tracking-tight leading-none">
+              12:00
+            </div>
+            <div id="dateDisplay" class="text-[11px] text-slate-400 capitalize mt-0.5">
+              Carregando data...
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </header>
+
+    <!-- 2. THE SIGNATURE APPLE TV "TOP SHELF" (HERO SHOWCASE BANNER) -->
+    <section id="heroShelf" class="relative w-full rounded-[32px] overflow-hidden apple-glass-card border border-white/15 shadow-2xl min-h-[300px] md:min-h-[360px] flex flex-col justify-end p-6 md:p-10 group">
+      
+      <!-- Top Shelf Cinematic Background Gradient & Backdrop -->
+      <div id="heroBackdrop" class="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent z-0 transition-all duration-700 pointer-events-none"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-0 pointer-events-none"></div>
+
+      <!-- Top Shelf Ambient Art Light -->
+      <div class="absolute top-0 right-0 w-2/3 h-full bg-gradient-to-l from-indigo-900/40 via-purple-900/20 to-transparent opacity-80 pointer-events-none"></div>
+
+      <!-- Content Info Box -->
+      <div class="relative z-10 max-w-2xl space-y-3">
+        <!-- Badges -->
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-white font-bold text-[11px] tracking-wide border border-white/20">
+            DESTAQUE APPLE TV
+          </span>
+          <span class="text-xs text-slate-300 font-medium">TCL 55" OLED • Xiaomi Mi Stick</span>
+          <span class="text-emerald-400 text-xs font-semibold">● 4K Ultra HD</span>
+        </div>
+
+        <!-- Headline Title -->
+        <h2 id="heroTitle" class="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
+          Cinema & Inteligência na sua TV
+        </h2>
+
+        <!-- Description -->
+        <p id="heroDesc" class="text-sm md:text-base text-slate-300 leading-relaxed font-normal">
+          Bem-vindo à experiência Apple TV desenvolvida com alta performance para sua TV TCL 55 OLED e Mi Stick. Inicialização ultra-rápida, zero anúncios invasivos e foco total no seu entretenimento.
+        </p>
+
+        <!-- Action Buttons (Signature Apple TV Solid White Pill Button) -->
+        <div class="flex flex-wrap items-center gap-3 pt-2">
+          <button onclick="launchApp('youtube', 'YouTube 4K', 'https://www.youtube.com/tv')" class="tv-focusable px-6 py-3 rounded-full bg-white text-black font-extrabold text-xs md:text-sm shadow-xl flex items-center gap-2 hover:bg-slate-100 transition-transform" tabindex="0">
+            <svg class="w-4 h-4 fill-current text-black" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            Assistir Agora
+          </button>
+          
+          <button onclick="openAboutModal()" class="tv-focusable px-5 py-3 rounded-full apple-pill-btn text-white font-bold text-xs md:text-sm hover:bg-white/20 flex items-center gap-2" tabindex="0">
+            <span>ℹ️</span> Criado por Leandro Corrêa
+          </button>
+
+          <button onclick="cleanRam()" class="tv-focusable px-4 py-3 rounded-full apple-pill-btn text-emerald-300 font-semibold text-xs md:text-sm flex items-center gap-1.5" tabindex="0">
+            <span>🚀</span> Otimizar TV
+          </button>
+        </div>
+      </div>
+
+      <!-- Top Shelf Live Indicator Dots -->
+      <div class="absolute bottom-6 right-8 hidden md:flex items-center gap-2 z-10">
+        <span class="w-2 h-2 rounded-full bg-white"></span>
+        <span class="w-2 h-2 rounded-full bg-white/30"></span>
+        <span class="w-2 h-2 rounded-full bg-white/30"></span>
+      </div>
+    </section>
+
+    <!-- 3. APPLE TV APP DOCK / SHELF (ICONIC SQUIRCLE CARDS) -->
+    <section id="appsRow" class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <h3 class="text-xl font-extrabold text-white tracking-tight">Meus Aplicativos</h3>
+          <span class="text-xs text-slate-400 font-medium ml-2">Pressione [OK] no controle remoto</span>
+        </div>
+        <span class="text-xs text-slate-400 font-medium">12 Aplicativos Instalados</span>
+      </div>
+
+      <!-- App Grid Row -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5" id="appsContainer">
+        <!-- Rendered dynamically below with Apple Squircle styling -->
+      </div>
+    </section>
+
+    <!-- 4. APPLE TV CONTROL CENTER & WIDGETS -->
+    <section id="controlCenter" class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-extrabold text-white tracking-tight">Central de Controle & Ferramentas</h3>
+        <span class="text-xs text-slate-400 font-medium">Utilitários rápidos do sistema tvOS</span>
+      </div>
+
+      <!-- Widgets Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        
+        <!-- Widget 1: Desempenho e RAM -->
+        <div class="apple-glass-card rounded-[28px] p-5 flex flex-col justify-between hover:border-white/20 transition-all">
+          <div class="flex items-center justify-between pb-2 border-b border-white/10">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">⚡</span>
+              <h4 class="text-sm font-bold text-white">Memória & Desempenho</h4>
+            </div>
+            <span id="ramBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/30">Excelente</span>
+          </div>
+
+          <div class="py-3 space-y-2">
+            <div class="flex justify-between text-xs text-slate-300 font-medium">
+              <span>Memória RAM (Livre)</span>
+              <span id="ramText" class="font-mono text-white">1.6 GB / 3.0 GB (53%)</span>
+            </div>
+            <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+              <div id="ramBar" class="bg-gradient-to-r from-emerald-400 to-cyan-400 h-2 rounded-full transition-all duration-700" style="width: 53%"></div>
+            </div>
+            <div class="flex justify-between text-[11px] text-slate-400 pt-1">
+              <span>Armazenamento</span>
+              <span class="text-slate-300">11.4 GB Livres (71%)</span>
+            </div>
+          </div>
+
+          <button id="btnQuickClean" onclick="cleanRam()" class="tv-focusable w-full py-2.5 rounded-xl apple-pill-btn text-white text-xs font-bold flex items-center justify-center gap-1.5" tabindex="0">
+            <span>🚀</span> Otimizar e Liberar RAM
+          </button>
+        </div>
+
+        <!-- Widget 2: Teste de Velocidade -->
+        <div class="apple-glass-card rounded-[28px] p-5 flex flex-col justify-between hover:border-white/20 transition-all">
+          <div class="flex items-center justify-between pb-2 border-b border-white/10">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">📶</span>
+              <h4 class="text-sm font-bold text-white">Conexão & Wi-Fi 5G</h4>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-semibold border border-blue-500/30">100% Sinal</span>
+          </div>
+
+          <div class="py-2.5 text-xs space-y-1.5 text-slate-300">
+            <div class="flex justify-between">
+              <span class="text-slate-400">IP Local:</span>
+              <span class="text-white mono font-medium">192.168.1.145</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Latência / Ping:</span>
+              <span id="pingValue" class="text-emerald-400 mono font-bold">12 ms</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Qualidade de Stream:</span>
+              <span class="text-cyan-300 font-semibold">4K 60fps Sem Buffering</span>
+            </div>
+          </div>
+
+          <button onclick="runSpeedTest()" class="tv-focusable w-full py-2.5 rounded-xl apple-pill-btn text-white text-xs font-bold flex items-center justify-center gap-1.5" tabindex="0">
+            <span>⚡</span> Testar Velocidade Agora
+          </button>
+        </div>
+
+        <!-- Widget 3: Central Rápida (Sleep Timer & HDMI) -->
+        <div class="apple-glass-card rounded-[28px] p-5 flex flex-col justify-between hover:border-white/20 transition-all">
+          <div class="flex items-center justify-between pb-2 border-b border-white/10">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">🎛️</span>
+              <h4 class="text-sm font-bold text-white">Ajustes Rápidos</h4>
+            </div>
+            <span id="sleepTimerBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-semibold border border-purple-500/30 font-mono">TIMER OFF</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 my-2">
+            <button onclick="openSleepTimerModal()" class="tv-focusable p-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-left" tabindex="0">
+              <div class="text-lg mb-0.5">⏱️</div>
+              <div class="text-xs font-bold text-white">Sleep Timer</div>
+              <div class="text-[10px] text-slate-400">Desligar TV</div>
+            </button>
+
+            <button onclick="openHdmiModal()" class="tv-focusable p-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-left" tabindex="0">
+              <div class="text-lg mb-0.5">🔌</div>
+              <div class="text-xs font-bold text-white">HDMI / Input</div>
+              <div class="text-[10px] text-slate-400">Console / Stick</div>
+            </button>
+          </div>
+
+          <button onclick="openSettingsModal()" class="tv-focusable w-full py-2.5 rounded-xl apple-pill-btn text-white text-xs font-bold flex items-center justify-center gap-1.5" tabindex="0">
+            <span>⚙️</span> Preferências do Sistema
+          </button>
+        </div>
+
+        <!-- Widget 4: Cartão do Criador (Leandro Corrêa) -->
+        <div onclick="openAboutModal()" class="apple-glass-card rounded-[28px] p-5 flex flex-col justify-between border-white/25 hover:border-white/40 cursor-pointer tv-focusable group shadow-xl" tabindex="0">
+          <div class="flex items-center justify-between pb-2 border-b border-white/10">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">👑</span>
+              <h4 class="text-sm font-bold text-white">Sobre o Criador</h4>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/20 text-white font-bold border border-white/20">AUTOR</span>
+          </div>
+
+          <div class="py-2 text-left">
+            <div class="text-base font-extrabold text-white group-hover:text-blue-300 transition-colors">
+              Leandro Corrêa
+            </div>
+            <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+              Desenvolvedor do Leandro tvOS Pro para TCL 55 OLED e Xiaomi Mi Stick.
+            </p>
+            <div class="text-[11px] text-emerald-400 font-semibold mt-2 flex items-center gap-1">
+              <span>●</span> Versão 1.0.0 Stable (tvOS Edition)
+            </div>
+          </div>
+
+          <div class="w-full py-2 rounded-xl bg-white/15 text-center text-xs font-bold text-white group-hover:bg-white group-hover:text-black transition-all">
+            Ver Especificações Completas ❯
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 5. APPLE TV FOOTER & REMOTE ASSISTANT -->
+    <footer class="pt-4 pb-2 border-t border-white/10 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-3">
+      <div class="flex items-center gap-3">
+        <span class="flex items-center gap-1.5 text-slate-300 font-medium">
+          <kbd class="px-2 py-0.5 rounded-md bg-white/10 border border-white/20 font-mono text-[10px] text-white">▲ ▼ ◄ ►</kbd> Navegar
+        </span>
+        <span class="flex items-center gap-1.5 text-slate-300 font-medium">
+          <kbd class="px-2 py-0.5 rounded-md bg-white/10 border border-white/20 font-mono text-[10px] text-white">OK / ENTER</kbd> Selecionar
+        </span>
+        <span class="flex items-center gap-1.5 text-slate-300 font-medium">
+          <kbd class="px-2 py-0.5 rounded-md bg-white/10 border border-white/20 font-mono text-[10px] text-white">VOLTAR / ESC</kbd> Fechar
+        </span>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span class="text-slate-300">Criado com primor por <strong class="text-white font-bold">Leandro Corrêa</strong></span>
+        <span class="text-slate-500">•</span>
+        <span class="text-slate-300">Inspirado na Experiência Apple tvOS</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ==================== APPLE TV STYLED MODALS ==================== -->
+
+  <!-- MODAL: SOBRE (ESTILO APPLE TV SETTINGS PANE) -->
+  <div id="modalAbout" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-2xl hidden flex items-center justify-center p-4">
+    <div class="apple-glass border border-white/20 rounded-[36px] p-6 md:p-8 max-w-xl w-full shadow-2xl text-center relative overflow-hidden animate-in fade-in zoom-in duration-200">
+      
+      <!-- Apple TV Icon Header -->
+      <div class="w-20 h-20 mx-auto rounded-[24px] bg-gradient-to-tr from-slate-800 to-slate-900 border border-white/20 shadow-2xl mb-4 flex items-center justify-center">
+        <svg class="w-10 h-10 text-white fill-current" viewBox="0 0 170 170">
+          <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.07-7.77-7.92-12.23-14.54-6.49-9.59-11.64-20.73-15.46-33.43-3.82-12.7-5.73-24.89-5.73-36.57 0-14.5 3.49-26.65 10.46-36.46 6.98-9.8 15.74-14.86 26.29-15.17 4.35 0 9.24 1.14 14.68 3.43 5.43 2.29 9.38 3.51 11.83 3.65 2.12-.27 6.13-1.6 12.03-3.99 5.91-2.4 10.87-3.48 14.89-3.26 12.19.64 21.84 5.31 28.94 14.01-10.66 6.44-15.89 15.34-15.7 26.71.22 9.04 3.69 16.59 10.42 22.65 6.72 6.06 14.68 9.39 23.86 9.99-1.96 5.89-4.24 11.95-6.84 18.18-2.6 6.22-4.99 11.75-7.17 16.59zM119.22 31.84c0-7.1 2.58-13.78 7.74-20.03 5.16-6.26 11.71-10.51 19.65-12.75.98 7.32-1.28 14.24-6.78 20.76-5.5 6.52-12.37 10.46-20.61 12.02z"/>
+        </svg>
+      </div>
+
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white border border-white/20 text-xs font-semibold mb-2">
+        LEANDRO tvOS 18 PRO
+      </div>
+
+      <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">
+        Leandro Corrêa
+      </h2>
+      <p class="text-xs text-slate-300 font-medium mt-1">
+        Criador & Arquiteto do Sistema
+      </p>
+
+      <!-- Apple TV Grouped List Style -->
+      <div class="my-5 rounded-2xl bg-white/5 border border-white/10 divide-y divide-white/10 text-left text-xs overflow-hidden">
+        <div class="flex justify-between p-3">
+          <span class="text-slate-400">Desenvolvido por:</span>
+          <span class="text-white font-bold">Leandro Corrêa</span>
+        </div>
+        <div class="flex justify-between p-3">
+          <span class="text-slate-400">Tema e Estilo:</span>
+          <span class="text-white font-medium">Apple TV / tvOS Human Interface</span>
+        </div>
+        <div class="flex justify-between p-3">
+          <span class="text-slate-400">Compatibilidade TCL:</span>
+          <span class="text-white font-medium">TCL 55" OLED (Google TV 4K HDR)</span>
+        </div>
+        <div class="flex justify-between p-3">
+          <span class="text-slate-400">Compatibilidade Xiaomi:</span>
+          <span class="text-white font-medium">Xiaomi Mi TV Stick & Mi Box</span>
+        </div>
+        <div class="flex justify-between p-3">
+          <span class="text-slate-400">Navegação:</span>
+          <span class="text-emerald-400 font-semibold">Controle Remoto Total (D-Pad)</span>
+        </div>
+        <div class="flex justify-between p-3">
+          <span class="text-slate-400">Versão:</span>
+          <span class="text-slate-300 font-mono">Build 2026.10-AppleTV</span>
+        </div>
+      </div>
+
+      <button id="btnCloseAbout" onclick="closeAboutModal()" class="tv-focusable px-8 py-3 rounded-full bg-white text-black font-extrabold text-xs shadow-xl hover:bg-slate-200 transition-all" tabindex="0">
+        Concluído
+      </button>
+
+    </div>
+  </div>
+
+  <!-- MODAL: SPEED TEST -->
+  <div id="modalSpeed" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-2xl hidden flex items-center justify-center p-4">
+    <div class="apple-glass border border-white/20 rounded-[36px] p-6 md:p-8 max-w-md w-full shadow-2xl text-center relative animate-in fade-in zoom-in duration-200">
+      <h3 class="text-xl font-black text-white flex items-center justify-center gap-2">
+        <span>⚡</span> Velocidade de Rede tvOS
+      </h3>
+      <p class="text-xs text-slate-400 mt-1">Conexão da TV com servidores de streaming 4K</p>
+
+      <div class="my-6">
+        <div class="text-5xl font-black text-white font-mono" id="speedDisplay">
+          0.0
+        </div>
+        <div class="text-xs text-slate-400 font-mono mt-1" id="speedUnit">Megabits por Segundo (Mbps)</div>
+      </div>
+
+      <div class="w-full bg-white/10 rounded-full h-3 overflow-hidden mb-5">
+        <div id="speedProgressBar" class="bg-gradient-to-r from-blue-400 via-indigo-400 to-white h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 text-xs mb-6">
+        <div class="p-3 rounded-2xl bg-white/5 border border-white/10">
+          <div class="text-slate-400">Latência / Ping</div>
+          <div class="text-emerald-400 font-mono font-bold text-base mt-0.5" id="testPing">-- ms</div>
+        </div>
+        <div class="p-3 rounded-2xl bg-white/5 border border-white/10">
+          <div class="text-slate-400">Estabilidade</div>
+          <div class="text-white font-mono font-bold text-base mt-0.5" id="testJitter">99.8%</div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-center gap-3">
+        <button id="btnStartSpeed" onclick="executeSpeedBenchmark()" class="tv-focusable px-6 py-2.5 rounded-full bg-white text-black font-extrabold text-xs" tabindex="0">
+          Testar Novamente
+        </button>
+        <button onclick="closeSpeedModal()" class="tv-focusable px-5 py-2.5 rounded-full apple-pill-btn text-white font-semibold text-xs" tabindex="0">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: WEATHER CUPERTINO -->
+  <div id="modalWeather" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-2xl hidden flex items-center justify-center p-4">
+    <div class="apple-glass border border-white/20 rounded-[36px] p-6 max-w-lg w-full shadow-2xl text-center relative animate-in fade-in zoom-in duration-200">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <span>🌤️</span> Tempo & Clima
+        </h3>
+        <button onclick="closeWeatherModal()" class="text-slate-400 hover:text-white text-sm">✕</button>
+      </div>
+
+      <div class="flex items-center justify-around py-4 bg-white/5 rounded-3xl border border-white/10 mb-4">
+        <div class="text-5xl">☀️</div>
+        <div class="text-left">
+          <div class="text-4xl font-black text-white">28°</div>
+          <div class="text-xs text-white font-semibold">Céu Limpo e Ensolarado</div>
+          <div class="text-[11px] text-slate-400">Sensação térmica de 30°</div>
+        </div>
+        <div class="text-right text-xs space-y-1 text-slate-300">
+          <div>💧 Umidade: <span class="font-bold text-white">62%</span></div>
+          <div>💨 Vento: <span class="font-bold text-white">12 km/h</span></div>
+          <div>☀️ Índice UV: <span class="font-bold text-emerald-400">6 (Moderado)</span></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-4 gap-2 text-xs mb-5">
+        <div class="p-3 rounded-2xl bg-white/5 border border-white/10 text-center">
+          <div class="text-slate-400 text-[10px]">Amanhã</div>
+          <div class="text-2xl my-1">⛅</div>
+          <div class="font-bold text-white">29°</div>
+          <div class="text-[10px] text-slate-400">19°</div>
+        </div>
+        <div class="p-3 rounded-2xl bg-white/5 border border-white/10 text-center">
+          <div class="text-slate-400 text-[10px]">Sexta</div>
+          <div class="text-2xl my-1">🌧️</div>
+          <div class="font-bold text-white">25°</div>
+          <div class="text-[10px] text-slate-400">18°</div>
+        </div>
+        <div class="p-3 rounded-2xl bg-white/5 border border-white/10 text-center">
+          <div class="text-slate-400 text-[10px]">Sábado</div>
+          <div class="text-2xl my-1">☀️</div>
+          <div class="font-bold text-white">28°</div>
+          <div class="text-[10px] text-slate-400">17°</div>
+        </div>
+        <div class="p-3 rounded-2xl bg-white/5 border border-white/10 text-center">
+          <div class="text-slate-400 text-[10px]">Domingo</div>
+          <div class="text-2xl my-1">🌤️</div>
+          <div class="font-bold text-white">31°</div>
+          <div class="text-[10px] text-slate-400">20°</div>
+        </div>
+      </div>
+
+      <button onclick="closeWeatherModal()" class="tv-focusable w-full py-3 rounded-full bg-white text-black font-extrabold text-xs" tabindex="0">
+        Fechar
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: SLEEP TIMER -->
+  <div id="modalSleepTimer" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-2xl hidden flex items-center justify-center p-4">
+    <div class="apple-glass border border-white/20 rounded-[36px] p-6 max-w-sm w-full shadow-2xl text-center relative animate-in fade-in zoom-in duration-200">
+      <h3 class="text-lg font-bold text-white flex items-center justify-center gap-2 mb-1">
+        <span>⏱️</span> Temporizador de Desligamento
+      </h3>
+      <p class="text-xs text-slate-400 mb-4">A TV desligará no horário programado</p>
+
+      <div class="grid grid-cols-2 gap-2 text-xs mb-5">
+        <button onclick="setSleepTimer(15)" class="tv-focusable p-3 rounded-2xl bg-white/5 hover:bg-white/20 border border-white/10 font-bold text-white text-center" tabindex="0">
+          15 minutos
+        </button>
+        <button onclick="setSleepTimer(30)" class="tv-focusable p-3 rounded-2xl bg-white/5 hover:bg-white/20 border border-white/10 font-bold text-white text-center" tabindex="0">
+          30 minutos
+        </button>
+        <button onclick="setSleepTimer(60)" class="tv-focusable p-3 rounded-2xl bg-white/5 hover:bg-white/20 border border-white/10 font-bold text-white text-center" tabindex="0">
+          60 minutos (1h)
+        </button>
+        <button onclick="setSleepTimer(90)" class="tv-focusable p-3 rounded-2xl bg-white/5 hover:bg-white/20 border border-white/10 font-bold text-white text-center" tabindex="0">
+          90 minutos
+        </button>
+        <button onclick="setSleepTimer(120)" class="tv-focusable p-3 rounded-2xl bg-white/5 hover:bg-white/20 border border-white/10 font-bold text-white text-center" tabindex="0">
+          120 minutos (2h)
+        </button>
+        <button onclick="cancelSleepTimer()" class="tv-focusable p-3 rounded-2xl bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 font-bold text-red-300 text-center" tabindex="0">
+          Desativar Timer
+        </button>
+      </div>
+
+      <button onclick="closeSleepTimerModal()" class="tv-focusable w-full py-2.5 rounded-full apple-pill-btn text-white font-semibold text-xs" tabindex="0">
+        Voltar
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: ENTRADAS HDMI -->
+  <div id="modalHdmi" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-2xl hidden flex items-center justify-center p-4">
+    <div class="apple-glass border border-white/20 rounded-[36px] p-6 max-w-md w-full shadow-2xl text-center relative animate-in fade-in zoom-in duration-200">
+      <h3 class="text-lg font-bold text-white flex items-center justify-center gap-2 mb-1">
+        <span>🔌</span> Entradas de Vídeo (HDMI)
+      </h3>
+      <p class="text-xs text-slate-400 mb-4">Comutador de portas na TCL OLED e Mi Stick</p>
+
+      <div class="space-y-2 mb-5">
+        <button onclick="switchHdmi(1, 'Console PS5 / Xbox')" class="tv-focusable w-full p-3.5 rounded-2xl bg-white/5 hover:bg-white/15 border border-white/10 flex items-center justify-between text-xs" tabindex="0">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🎮</span>
+            <div class="text-left">
+              <div class="font-bold text-white">HDMI 1 (4K 120Hz VRR)</div>
+              <div class="text-[10px] text-slate-400">Videogame / Console de Jogos</div>
+            </div>
+          </div>
+          <span class="text-blue-300 font-mono text-[10px] bg-blue-500/20 px-2 py-0.5 rounded-full border border-blue-500/30">Ativo</span>
+        </button>
+
+        <button onclick="switchHdmi(2, 'Home Theater eARC')" class="tv-focusable w-full p-3.5 rounded-2xl bg-white/5 hover:bg-white/15 border border-white/10 flex items-center justify-between text-xs" tabindex="0">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🔊</span>
+            <div class="text-left">
+              <div class="font-bold text-white">HDMI 2 (eARC / ARC)</div>
+              <div class="text-[10px] text-slate-400">Soundbar / Dolby Atmos</div>
+            </div>
+          </div>
+          <span class="text-emerald-300 font-mono text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/30">Pronto</span>
+        </button>
+
+        <button onclick="switchHdmi(3, 'Xiaomi Mi Stick / PC')" class="tv-focusable w-full p-3.5 rounded-2xl bg-white/5 hover:bg-white/15 border border-white/10 flex items-center justify-between text-xs" tabindex="0">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">📺</span>
+            <div class="text-left">
+              <div class="font-bold text-white">HDMI 3 (Auxiliar)</div>
+              <div class="text-[10px] text-slate-400">Xiaomi Mi TV Stick / Notebook</div>
+            </div>
+          </div>
+          <span class="text-slate-400 font-mono text-[10px] bg-white/5 px-2 py-0.5 rounded-full">Standby</span>
+        </button>
+      </div>
+
+      <button onclick="closeHdmiModal()" class="tv-focusable w-full py-2.5 rounded-full apple-pill-btn text-white font-semibold text-xs" tabindex="0">
+        Fechar
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: AJUSTES RÁPIDOS -->
+  <div id="modalSettings" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-2xl hidden flex items-center justify-center p-4">
+    <div class="apple-glass border border-white/20 rounded-[36px] p-6 max-w-md w-full shadow-2xl text-center relative animate-in fade-in zoom-in duration-200">
+      <h3 class="text-lg font-bold text-white flex items-center justify-center gap-2 mb-1">
+        <span>⚙️</span> Ajustes tvOS
+      </h3>
+      <p class="text-xs text-slate-400 mb-4">Preferências de hardware e controle remoto</p>
+
+      <div class="rounded-2xl bg-white/5 border border-white/10 divide-y divide-white/10 text-xs text-left mb-5 overflow-hidden">
+        <div class="flex items-center justify-between p-3.5">
+          <div>
+            <div class="font-bold text-white">Bluetooth</div>
+            <div class="text-[10px] text-slate-400">Controles e Fones Pareados</div>
+          </div>
+          <button onclick="toggleSetting(this, 'Bluetooth')" class="tv-focusable px-3 py-1 rounded-full bg-emerald-500 text-white font-bold" tabindex="0">LIGADO</button>
+        </div>
+
+        <div class="flex items-center justify-between p-3.5">
+          <div>
+            <div class="font-bold text-white">Economia de Energia OLED</div>
+            <div class="text-[10px] text-slate-400">Pure Black absoluto em telas OLED</div>
+          </div>
+          <button onclick="toggleSetting(this, 'Economia OLED')" class="tv-focusable px-3 py-1 rounded-full bg-emerald-500 text-white font-bold" tabindex="0">ATIVO</button>
+        </div>
+
+        <div class="flex items-center justify-between p-3.5">
+          <div>
+            <div class="font-bold text-white">Sons de Navegação (Clique Apple)</div>
+            <div class="text-[10px] text-slate-400">Feedback sonoro do controle remoto</div>
+          </div>
+          <button id="btnSoundToggle" onclick="toggleNavSound()" class="tv-focusable px-3 py-1 rounded-full bg-emerald-500 text-white font-bold" tabindex="0">LIGADO</button>
+        </div>
+      </div>
+
+      <button onclick="closeSettingsModal()" class="tv-focusable w-full py-2.5 rounded-full apple-pill-btn text-white font-semibold text-xs" tabindex="0">
+        Concluído
+      </button>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toastNotification" class="fixed top-8 right-8 z-50 transform -translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="apple-glass border border-white/20 px-5 py-3 rounded-full shadow-2xl flex items-center gap-3 text-xs">
+      <span id="toastIcon" class="text-xl">🚀</span>
+      <div>
+        <div id="toastTitle" class="font-bold text-white">Notificação</div>
+        <div id="toastMsg" class="text-slate-300 text-[11px]">Operação realizada com sucesso</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // --- APP DATA WITH APPLE TV SQUIRCLE GRADIENTS ---
+    const appsList = [
+      { id: 'youtube', name: 'YouTube', icon: '▶️', gradient: 'from-red-600 via-red-700 to-black', category: 'Vídeo 4K', url: 'https://www.youtube.com/tv' },
+      { id: 'netflix', name: 'Netflix', icon: '🎬', gradient: 'from-red-700 via-neutral-900 to-black', category: 'Séries & Filmes', url: 'https://www.netflix.com' },
+      { id: 'prime', name: 'Prime Video', icon: '📦', gradient: 'from-sky-600 via-blue-900 to-black', category: 'Amazon Original', url: 'https://www.primevideo.com' },
+      { id: 'disney', name: 'Disney+', icon: '✨', gradient: 'from-blue-700 via-indigo-950 to-black', category: 'Marvel & Disney', url: 'https://www.disneyplus.com' },
+      { id: 'max', name: 'Max (HBO)', icon: '🍿', gradient: 'from-purple-700 via-purple-950 to-black', category: 'HBO & Warner', url: 'https://www.max.com' },
+      { id: 'appletv', name: 'Apple TV+', icon: '🍏', gradient: 'from-neutral-700 via-neutral-900 to-black', category: 'Apple Originals', url: 'https://tv.apple.com' },
+      { id: 'globoplay', name: 'Globoplay', icon: '🌐', gradient: 'from-orange-600 via-red-700 to-black', category: 'Ao Vivo & Séries', url: 'https://globoplay.globo.com' },
+      { id: 'spotify', name: 'Spotify', icon: '🎵', gradient: 'from-emerald-600 via-slate-900 to-black', category: 'Música & Pods', url: 'https://open.spotify.com' },
+      { id: 'plex', name: 'Plex', icon: '📼', gradient: 'from-amber-600 via-amber-950 to-black', category: 'Servidor Local', url: 'https://app.plex.tv' },
+      { id: 'twitch', name: 'Twitch', icon: '👾', gradient: 'from-purple-600 via-indigo-950 to-black', category: 'Transmissões', url: 'https://www.twitch.tv' },
+      { id: 'smarttube', name: 'SmartTube', icon: '⚡', gradient: 'from-cyan-600 via-blue-950 to-black', category: 'Sem Anúncios', url: 'https://smarttubeapp.github.io' },
+      { id: 'browser', name: 'Navegador', icon: '🧭', gradient: 'from-blue-500 via-indigo-900 to-black', category: 'Safari / Web', url: 'https://www.google.com' }
+    ];
+
+    // --- WEB AUDIO API FOR APPLE TV CLICK SOUNDS ---
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function playAppleClick() {
+      if (!soundEnabled) return;
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        // Apple TV Remote crisp tactile click sound
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(650, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(320, audioCtx.currentTime + 0.035);
+        gain.gain.setValueAtTime(0.09, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.035);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.035);
+      } catch (e) {}
+    }
+
+    function playAppleSelect() {
+      if (!soundEnabled) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.09);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.09);
+      } catch (e) {}
+    }
+
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', () => {
+      renderApps();
+      updateClock();
+      setInterval(updateClock, 1000);
+      setupDpadNavigation();
+
+      setTimeout(() => {
+        const firstFocus = document.querySelector('.tv-focusable');
+        if (firstFocus) firstFocus.focus();
+      }, 350);
+    });
+
+    // --- RENDER APPS (APPLE SQUIRCLE ICONS) ---
+    function renderApps() {
+      const container = document.getElementById('appsContainer');
+      container.innerHTML = appsList.map(app => `
+        <div 
+          tabindex="0"
+          onclick="launchApp('${app.id}', '${app.name}', '${app.url}')"
+          class="tv-focusable cursor-pointer flex flex-col items-center group"
+          data-app-id="${app.id}"
+          onfocus="onAppCardFocus('${app.name}', '${app.category}')"
+        >
+          <!-- Squircle App Tile -->
+          <div class="w-full aspect-[16/10] apple-squircle bg-gradient-to-br ${app.gradient} p-4 flex flex-col justify-between items-center border border-white/10 shadow-lg group-hover:border-white/30 transition-all">
+            <span class="text-3xl mt-1 drop-shadow-md group-hover:scale-110 transition-transform">${app.icon}</span>
+            <span class="text-[10px] text-white/70 font-semibold tracking-wide uppercase">${app.category}</span>
+          </div>
+
+          <!-- App Label Below -->
+          <div class="mt-2 text-center">
+            <div class="text-xs font-bold text-slate-200 group-hover:text-white transition-colors tracking-wide">${app.name}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // --- ON FOCUS APP: UPDATE TOP SHELF HERO DYNAMICALLY ---
+    function onAppCardFocus(appName, appCategory) {
+      playAppleClick();
+      const heroTitle = document.getElementById('heroTitle');
+      const heroDesc = document.getElementById('heroDesc');
+      if (heroTitle && heroDesc) {
+        heroTitle.textContent = `${appName} em 4K HDR`;
+        heroDesc.textContent = `Aproveite ${appName} (${appCategory}) com máxima fidelidade visual na tela OLED da sua TV TCL e com processamento ágil no Xiaomi Mi Stick.`;
+      }
+    }
+
+    // --- LAUNCH APP ---
+    function launchApp(id, name, url) {
+      playAppleSelect();
+      showToast('Iniciando Aplicativo', `Abrindo ${name} no modo Apple tvOS...`, '🎬');
+      if (url && url !== '#') {
+        setTimeout(() => {
+          try { window.open(url, '_blank'); } catch(e) {}
+        }, 1200);
+      }
+    }
+
+    // --- CLOCK & DATE ---
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('clockDisplay').textContent = `${hours}:${minutes}`;
+
+      const options = { weekday: 'short', day: 'numeric', month: 'short' };
+      const dateStr = now.toLocaleDateString('pt-BR', options);
+      document.getElementById('dateDisplay').textContent = dateStr;
+    }
+
+    // --- RAM CLEANER (OPTIMIZER) ---
+    let isCleaning = false;
+    function cleanRam() {
+      if (isCleaning) return;
+      isCleaning = true;
+      playAppleClick();
+
+      const btn = document.getElementById('btnQuickClean');
+      btn.innerHTML = `<span>⏳</span> Otimizando tvOS...`;
+      btn.classList.add('opacity-70');
+
+      showToast('Otimização Ativa', 'Liberando memória e limpando cache...', '🚀');
+
+      setTimeout(() => {
+        document.getElementById('ramText').textContent = '0.9 GB / 3.0 GB (31%)';
+        document.getElementById('ramBar').style.width = '31%';
+        document.getElementById('ramBadge').textContent = 'Ultrarrápido (920MB Liberados)';
+        
+        playAppleSelect();
+        showToast('Memória Otimizada!', 'TV pronta com máxima velocidade e fluidez.', '✅');
+
+        btn.innerHTML = `<span>✓</span> Otimizado com Sucesso`;
+        btn.classList.remove('opacity-70');
+
+        setTimeout(() => {
+          btn.innerHTML = `<span>🚀</span> Otimizar e Liberar RAM`;
+          isCleaning = false;
+        }, 3000);
+      }, 1400);
+    }
+
+    // --- SPEED TEST ---
+    function runSpeedTest() {
+      openSpeedModal();
+      executeSpeedBenchmark();
+    }
+    function openSpeedModal() {
+      document.getElementById('modalSpeed').classList.remove('hidden');
+      setTimeout(() => document.getElementById('btnStartSpeed').focus(), 100);
+    }
+    function closeSpeedModal() {
+      document.getElementById('modalSpeed').classList.add('hidden');
+    }
+
+    function executeSpeedBenchmark() {
+      const display = document.getElementById('speedDisplay');
+      const bar = document.getElementById('speedProgressBar');
+      const pingEl = document.getElementById('testPing');
+
+      display.textContent = '0.0';
+      bar.style.width = '0%';
+      pingEl.textContent = 'Calculando...';
+
+      let step = 0;
+      const targetSpeed = 312.8;
+      const interval = setInterval(() => {
+        step += 5;
+        const currentSpeed = (Math.sin(step / 10) * 35 + (step * (targetSpeed / 100))).toFixed(1);
+        display.textContent = currentSpeed;
+        bar.style.width = `${step}%`;
+        playAppleClick();
+
+        if (step >= 100) {
+          clearInterval(interval);
+          display.textContent = targetSpeed.toFixed(1);
+          bar.style.width = '100%';
+          pingEl.textContent = '9 ms';
+          playAppleSelect();
+          showToast('Teste Concluído', `Velocidade aferida: ${targetSpeed} Mbps`, '⚡');
+        }
+      }, 70);
+    }
+
+    // --- MODAL CONTROLS ---
+    function openAboutModal() {
+      playAppleClick();
+      document.getElementById('modalAbout').classList.remove('hidden');
+      setTimeout(() => document.getElementById('btnCloseAbout').focus(), 100);
+    }
+    function closeAboutModal() {
+      document.getElementById('modalAbout').classList.add('hidden');
+      playAppleClick();
+    }
+
+    function openWeatherModal() {
+      playAppleClick();
+      document.getElementById('modalWeather').classList.remove('hidden');
+    }
+    function closeWeatherModal() {
+      document.getElementById('modalWeather').classList.add('hidden');
+    }
+
+    function openSleepTimerModal() {
+      playAppleClick();
+      document.getElementById('modalSleepTimer').classList.remove('hidden');
+    }
+    function closeSleepTimerModal() {
+      document.getElementById('modalSleepTimer').classList.add('hidden');
+    }
+
+    function setSleepTimer(mins) {
+      playAppleSelect();
+      document.getElementById('sleepTimerBadge').textContent = `${mins}m`;
+      closeSleepTimerModal();
+      showToast('Sleep Timer', `A TV será desligada em ${mins} minutos.`, '⏱️');
+    }
+    function cancelSleepTimer() {
+      document.getElementById('sleepTimerBadge').textContent = 'TIMER OFF';
+      closeSleepTimerModal();
+      showToast('Sleep Timer', 'Desligamento automático cancelado.', '❌');
+    }
+
+    function openHdmiModal() {
+      playAppleClick();
+      document.getElementById('modalHdmi').classList.remove('hidden');
+    }
+    function closeHdmiModal() {
+      document.getElementById('modalHdmi').classList.add('hidden');
+    }
+    function switchHdmi(port, label) {
+      playAppleSelect();
+      closeHdmiModal();
+      showToast('Alternando HDMI', `Comutando para HDMI ${port} (${label})...`, '🔌');
+    }
+
+    function openSettingsModal() {
+      playAppleClick();
+      document.getElementById('modalSettings').classList.remove('hidden');
+    }
+    function closeSettingsModal() {
+      document.getElementById('modalSettings').classList.add('hidden');
+    }
+
+    function toggleSetting(btn, name) {
+      playAppleClick();
+      const isCurrentlyOn = btn.textContent.includes('LIGADO') || btn.textContent.includes('ATIVO');
+      if (isCurrentlyOn) {
+        btn.textContent = 'DESLIGADO';
+        btn.className = 'tv-focusable px-3 py-1 rounded-full bg-slate-700 text-slate-300 font-bold';
+        showToast(name, `${name} foi desativado.`, '⚙️');
+      } else {
+        btn.textContent = name === 'Economia OLED' ? 'ATIVO' : 'LIGADO';
+        btn.className = 'tv-focusable px-3 py-1 rounded-full bg-emerald-500 text-white font-bold';
+        showToast(name, `${name} foi ativado.`, '✅');
+      }
+    }
+
+    function toggleNavSound() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById('btnSoundToggle');
+      if (soundEnabled) {
+        btn.textContent = 'LIGADO';
+        btn.className = 'tv-focusable px-3 py-1 rounded-full bg-emerald-500 text-white font-bold';
+        playAppleSelect();
+        showToast('Sons tvOS', 'Feedback de clique ligado.', '🔊');
+      } else {
+        btn.textContent = 'DESLIGADO';
+        btn.className = 'tv-focusable px-3 py-1 rounded-full bg-slate-700 text-slate-300 font-bold';
+        showToast('Sons tvOS', 'Feedback de clique silenciado.', '🔇');
+      }
+    }
+
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const focusable = el.querySelector('.tv-focusable');
+        if (focusable) focusable.focus();
+      }
+    }
+
+    // --- TOAST NOTIFICATION ---
+    let toastTimeout = null;
+    function showToast(title, msg, icon = 'ℹ️') {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastTitle').textContent = title;
+      document.getElementById('toastMsg').textContent = msg;
+      document.getElementById('toastIcon').textContent = icon;
+
+      toast.classList.remove('-translate-y-24', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('-translate-y-24', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 3200);
+    }
+
+    // --- DPAD SPATIAL NAVIGATION ---
+    function setupDpadNavigation() {
+      window.addEventListener('keydown', (e) => {
+        const key = e.key;
+
+        if (key === 'Escape' || key === 'Backspace' || key === 'GoBack') {
+          const openModals = document.querySelectorAll('.fixed.inset-0:not(.hidden)');
+          if (openModals.length > 0) {
+            e.preventDefault();
+            openModals.forEach(m => m.classList.add('hidden'));
+            playAppleClick();
+            return;
+          }
+        }
+
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
+          e.preventDefault();
+          navigateDpad(key);
+        } else if (key === 'Enter') {
+          playAppleSelect();
+        }
+      });
+    }
+
+    function navigateDpad(direction) {
+      const focusables = Array.from(document.querySelectorAll('.tv-focusable:not(.hidden):not([disabled])')).filter(el => {
+        const rect = el.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0 && el.offsetParent !== null;
+      });
+
+      if (focusables.length === 0) return;
+
+      const current = document.activeElement;
+      if (!current || !focusables.includes(current)) {
+        focusables[0].focus();
+        playAppleClick();
+        return;
+      }
+
+      const currentRect = current.getBoundingClientRect();
+      const currentCenter = {
+        x: currentRect.left + currentRect.width / 2,
+        y: currentRect.top + currentRect.height / 2
+      };
+
+      let bestCandidate = null;
+      let minDistance = Infinity;
+
+      focusables.forEach(candidate => {
+        if (candidate === current) return;
+        const rect = candidate.getBoundingClientRect();
+        const center = {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2
+        };
+
+        const dx = center.x - currentCenter.x;
+        const dy = center.y - currentCenter.y;
+
+        let isValidDirection = false;
+        let score = 0;
+
+        if (direction === 'ArrowRight' && dx > 10) {
+          isValidDirection = true;
+          score = dx + Math.abs(dy) * 2.2;
+        } else if (direction === 'ArrowLeft' && dx < -10) {
+          isValidDirection = true;
+          score = Math.abs(dx) + Math.abs(dy) * 2.2;
+        } else if (direction === 'ArrowDown' && dy > 10) {
+          isValidDirection = true;
+          score = dy + Math.abs(dx) * 1.5;
+        } else if (direction === 'ArrowUp' && dy < -10) {
+          isValidDirection = true;
+          score = Math.abs(dy) + Math.abs(dx) * 1.5;
+        }
+
+        if (isValidDirection && score < minDistance) {
+          minDistance = score;
+          bestCandidate = candidate;
+        }
+      });
+
+      if (bestCandidate) {
+        bestCandidate.focus();
+        bestCandidate.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        playAppleClick();
+      }
+    }
+  </script>
+</body>
+</html>
