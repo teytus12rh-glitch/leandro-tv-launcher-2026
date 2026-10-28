@@ -20,9 +20,6 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Configurar Android SDK
-      uses: android-actions/setup-android@v3
-
     - name: Configurar Gradle
       uses: gradle/actions/setup-gradle@v3
 
@@ -33,7 +30,7 @@ jobs:
         fi
         chmod +x gradlew
 
-    - name: Compilar APK (assembleDebug)
+    - name: Compilar APK
       run: ./gradlew assembleDebug --stacktrace
 
     - name: Disponibilizar APK para Download
